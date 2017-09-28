@@ -22,5 +22,5 @@ img_path = os.path.join(path, img)
 print img_path
 
 # display that image
-cmd = 'display {}'.format(img)
+cmd = 'display {}'.format(img_path)
 os.system(cmd)
