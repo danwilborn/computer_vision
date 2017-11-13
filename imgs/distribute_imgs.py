@@ -10,23 +10,22 @@ train_dir = './training'
 valid_dir = './validation'
 
 for n in nums:
-    curr_dir = os.path.join(test_dir, str(n))
-    print curr_dir
-    training = 0
+    curr_dir = os.path.join(train_dir, str(n))
+    testing = 0
     validation = 0
     for subdir, dirs, files in os.walk(curr_dir):
         for f in files:
             img_path = os.path.join(subdir, f)
             #print img_path
-            if training < 10:
-                target_dir = os.path.join(train_dir, str(n))
+            if testing < 100:
+                target_dir = os.path.join(test_dir, str(n))
                 cmd = 'mv {} {}'.format(img_path, target_dir)
-                #print cmd
+                print cmd
                 os.system(cmd)
-                training += 1
-            elif validation < 5:
+                testing += 1
+            elif validation < 100:
                 target_dir = os.path.join(valid_dir, str(n))
                 cmd = 'mv {} {}'.format(img_path, target_dir)
-                #print cmd
+                print cmd
                 os.system(cmd)
                 validation += 1
