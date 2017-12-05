@@ -1,0 +1,17 @@
+Thoughts:
+-	Harris Corners provide a list of corners but they do not seem to be KeyPoint objects
+		returns dst, which is an image, not keypoints
+-	FAST finds corners also but actually returns keypoints
+-	ORB uses a combination of FAST and Harris to get keypoints then generates descriptors
+-	BRISK is another alternative
+-	BF-Matching requires descriptors to work
+
+Problems:
+-	SIFT and SURF are patented, can't use
+-	ORB is not finding any keypoints or descriptors from our images
+-	Need to figure out how to convert dst into keypoints
+	OR
+-	Figure out how to run ORB with keypoints from FAST
+
+WHY WON'T ORB OR BRISK FIND ANY DESCRIPTORS
+KAZE and AKAZE don't find any either...
