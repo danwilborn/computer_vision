@@ -98,24 +98,48 @@ matches = flann.knnMatch(target_brisk_desc, query_brisk_desc, k=2)
 print(matches)
 
 good = []
-print("finding good matches:")
+#print("finding good matches:")
 for match in matches:
 	if len(match) == 2:
-		print(match)
+		#print(match)
 		good.append(match)
 	#print(match, len(match))
-print("matches after cleaning:")
-print(good)	
+#print("matches after cleaning:")
+#print(good)
+	
 matchesMask = [[0,0] for i in range(len(good))]
 # ratio test as per Lowe's paper
 for i,(m,n) in enumerate(good):
     if m.distance < 0.7*n.distance:
         matchesMask[i]=[1,0]
 
+'''
+if len(good) > MIN_MATCH_COUNT:
+	src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
+	dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
+
+	M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
+	matchesMask = mask.ravel().tolist()
+
+	h, w = img1.shape
+	pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+	dst = cv2.perspectiveTransform(pts,M)
+
+	img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3,cv2.LINE_AA)
+
+else:
+	print "Not enough matches are found - %d/%d % (len(good),MIN_MATCH_COUNT)
+	matchesMask = None
+
+'''
+
 draw_params = dict(matchColor = (0,255,0),
                    singlePointColor = (255,0,0),
                    matchesMask = matchesMask,
                    flags = 0)
+
+
+
 
 #img3 = cv2.drawMatchesKnn(target_img,target_brisk_kp,query_img,query_brisk_kp,good,None,**draw_params)
 
