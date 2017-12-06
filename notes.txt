@@ -23,7 +23,7 @@ We have:
 Next Steps:
 	-	Implement Homography to find Objects
 		(http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_feature_homography/py_feature_homography.html#feature-matching-homography-to-find-objects)
-	-	build query image from all the images in the training set (combine_images.py) - almost done but not quite
+	-	build query image from all the images in the training set (combine_images.py) - DONE
 	-	guess_digit.py:
 		for each image in validation: 
 			run matcher against query image
