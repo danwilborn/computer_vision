@@ -24,8 +24,8 @@ class CornerHarris(object):
 
 # FAST returns the corners as a list of KeyPoints
 class FAST(object):
-	def __init__(self, img_file):
-		self.img = cv2.imread(img_file)
+	def __init__(self, image):
+		self.img = image
 		self.gray = cv2.cvtColor(self.img, cv2.COLOR_BGR2GRAY)
 		fast = cv2.FastFeatureDetector_create()
 		self.kp = fast.detect(self.gray,None)

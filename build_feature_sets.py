@@ -43,33 +43,40 @@ file2 = 'imgs/training/4/881.png'
 img1 = cv2.imread(file1)
 img2 = cv2.imread(file2)
 
-gray1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-gray2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+big1 = cv2.resize(img1, None, fx = 2, fy = 2, interpolation = cv2.INTER_CUBIC)
+big2 = cv2.resize(img2, None, fx = 2, fy = 2, interpolation = cv2.INTER_CUBIC)
 
-fast1 = FAST(file1)
-fast2 = FAST(file2)
+gray1 = cv2.cvtColor(big1, cv2.COLOR_BGR2GRAY)
+gray2 = cv2.cvtColor(big2, cv2.COLOR_BGR2GRAY)
+
+fast1 = FAST(big1)
+fast2 = FAST(big2)
 
 FASTkp1 = fast1.kp
 FASTkp2 = fast2.kp
 
 kp1, desc1 = orb.compute(gray1, FASTkp1)
 kp2, desc2 = orb.compute(gray2, FASTkp2)
+
+# fast1.show_result()
+# fast2.show_result()
+
 print('######### FAST ##########')
 print('----- Key Points -----')
 print(FASTkp1)
 print(FASTkp2)
 print(' ')
 
-print('######### ORB ##########')
-print('----- Key Points -----')
-print(kp1)
-print(kp2)
-print(' ')
+# print('######### ORB ##########')
+# print('----- Key Points -----')
+# print(kp1)
+# print(kp2)
+# print(' ')
 
-print('----- Descriptors -----')
-print(desc1)
-print(desc2)
-print(' ')
+# print('----- Descriptors -----')
+# print(desc1)
+# print(desc2)
+# print(' ')
 
 BRISKkp1, BRISKdesc1 = brisk.compute(gray1, FASTkp1)
 BRISKkp2, BRISKdesc2 = brisk.compute(gray2, FASTkp2)
@@ -84,6 +91,9 @@ print('----- Descriptors -----')
 print(BRISKdesc1)
 print(BRISKdesc2)
 print(' ')
+print(str(len(BRISKdesc1)))
+print(str(len(BRISKdesc2)))
+print('')
 
 # Can only kaze/akaze keypoints 
 AKkp1, AKdesc1 = akaze.compute(gray1, None)
@@ -102,15 +112,61 @@ print(' ')
 
 # create BFMatcher object
 #bf = cv2.BFMatcher(cv2.NORM_HAMMING, crossCheck=False)
+#bf = cv2.BFMatcher()
 
 # Match descriptors
-#matches = bf.match(desc1, desc2)
+#matches = bf.match(BRISKdesc1, BRISKdesc2)
+#matches = bf.knnMatch(BRISKdesc1, BRISKdesc2, k=2)
 
 # Sort matches in order of their distance
 #matches = sorted(matches, key = lambda x:x.distance)
 #print(matches)
 
+# Apply ratio test
+# good = []
+# for m,n in matches:
+	# print('m',m.distance)
+	# print('n',n.distance)
+	# if m.distance < n.distance * 0.8:
+		# good.append(m)
+# print(good)
 # Draw first 3 matches
-#img3 = cv2.drawMatches(img1,kp1,img2,kp2,matches[:1],flags=2)
+# img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,None,flags=2)
 
-#plt.imshow(img3),plt.show()
+# plt.imshow(img3),plt.show()
+
+
+############## try FLANN Matching ##############
+FLANN_INDEX_LSH = 6
+index_params = dict(algorithm = FLANN_INDEX_LSH,
+                   table_number = 6, # 12
+                   key_size = 12,     # 20
+                   multi_probe_level = 1) #2
+search_params = dict(checks=50)
+flann = cv2.FlannBasedMatcher(index_params, search_params)
+matches = flann.knnMatch(BRISKdesc1, BRISKdesc2, k=2)
+print(matches)
+
+good = []
+print("finding good matches:")
+for match in matches:
+	if len(match) == 2:
+		print(match)
+		good.append(match)
+	#print(match, len(match))
+print("matches after cleaning:")
+print(good)	
+matchesMask = [[0,0] for i in range(len(good))]
+# ratio test as per Lowe's paper
+for i,(m,n) in enumerate(good):
+    if m.distance < 0.7*n.distance:
+        matchesMask[i]=[1,0]
+
+draw_params = dict(matchColor = (0,255,0),
+                   singlePointColor = (255,0,0),
+                   matchesMask = matchesMask,
+                   flags = 0)
+
+img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,None,**draw_params)
+
+plt.imshow(img3),plt.show()
