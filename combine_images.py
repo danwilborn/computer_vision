@@ -7,7 +7,7 @@ import glob
 # get all the training images
 # store in img_dict where key is what digit it is and value is list of all the image files
 img_dict = dict()
-for subdir, dirs, files in os.walk('imgs\\training'):
+for subdir, dirs, files in os.walk('imgs/training'):
 	for i in range(10):
 		num_dir = os.path.join(subdir, str(i))
 		for sub, dir, imgs in os.walk(num_dir):
@@ -17,13 +17,6 @@ for subdir, dirs, files in os.walk('imgs\\training'):
 				file_path = os.path.join(num_dir, img)
 				#print(file_path)
 				img_dict[i].append(file_path)
-# for num in img_dict:
-	# print(num)
-	# for i, img in enumerate(img_dict[num]):
-		# if i < 10:
-			# print(img)
-		# else:
-			# continue
 			
 # generate 50 row images with 100 images per row
 # each digit has 500 training images so there are 5 rows of 100 per digit, 50 total
@@ -60,7 +53,7 @@ imstack = base
 # sort file names so that rows are in correct order
 row_imgs = sorted(row_imgs)
 for i,img in enumerate(row_imgs):
-	print(img)
+	#print(img)
 	if i == 0: continue
 	im = cv2.imread(img)
 	imstack = np.vstack((imstack, im))
