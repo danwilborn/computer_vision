@@ -17,18 +17,18 @@ for subdir, dirs, files in os.walk('imgs\\training'):
 				file_path = os.path.join(num_dir, img)
 				#print(file_path)
 				img_dict[i].append(file_path)
-for num in img_dict:
-	print(num)
-	for i, img in enumerate(img_dict[num]):
-		if i < 10:
-			print(img)
-		else:
-			continue
+# for num in img_dict:
+	# print(num)
+	# for i, img in enumerate(img_dict[num]):
+		# if i < 10:
+			# print(img)
+		# else:
+			# continue
 			
 # generate 50 row images with 100 images per row
 # each digit has 500 training images so there are 5 rows of 100 per digit, 50 total
 total_rows = 0
-row_size = 20
+row_size = 100
 for num in img_dict:
 	num_rows = 0
 	while num_rows < 5:
@@ -41,12 +41,13 @@ for num in img_dict:
 			# calculate index of img file in img_dict[num]
 			index = row_size * num_rows + img_count
 			img = img_dict[num][index]
+			#print('stacking {}'.format(img))
 			im = cv2.imread(img)
-			im = cv2.resize(base, None, fx = 2, fy = 2, interpolation = cv2.INTER_CUBIC)
+			im = cv2.resize(im, None, fx = 2, fy = 2, interpolation = cv2.INTER_CUBIC)
 			himstack = np.hstack((himstack, im))
 			img_count += 1
 		num_rows += 1
-		cv2.imwrite("row-" + str(total_rows) + ".png", himstack)
+		cv2.imwrite("row-" + str(num) + "-" + str(num_rows) + ".png", himstack)
 		total_rows += 1
 		
 # combine all 50 row-#.png files into one image, stacked horizontaly
@@ -56,7 +57,8 @@ row_imgs = [i for i in glob.glob('row*.png')]
 # base picture
 base = cv2.imread(row_imgs[0])
 imstack = base
-# find a way to sort file names
+# sort file names so that rows are in correct order
+row_imgs = sorted(row_imgs)
 for i,img in enumerate(row_imgs):
 	print(img)
 	if i == 0: continue
@@ -64,3 +66,10 @@ for i,img in enumerate(row_imgs):
 	imstack = np.vstack((imstack, im))
 # write final query.png
 cv2.imwrite("query.png", imstack)
+
+#delete row image files
+# bash command:
+#cmd = 'rm row*'
+# windows command:
+cmd = 'del row*'
+os.system(cmd)
