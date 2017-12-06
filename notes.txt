@@ -1,3 +1,4 @@
+###################### December 4, 2017 ######################
 Thoughts:
 -	Harris Corners provide a list of corners but they do not seem to be KeyPoint objects
 		returns dst, which is an image, not keypoints
@@ -13,5 +14,24 @@ Problems:
 	OR
 -	Figure out how to run ORB with keypoints from FAST
 
-WHY WON'T ORB OR BRISK FIND ANY DESCRIPTORS
-KAZE and AKAZE don't find any either...
+###################### December 6, 2017 ######################
+We have:
+	-	keypoints: FAST
+	-	descriptors: BRISK
+	-	matches: FLANN
+		(problems drawing the matches but we are going to ignore that for now)
+Next Steps:
+	-	Implement Homography to find Objects
+		(http://opencv-python-tutroals.readthedocs.io/en/latest/py_tutorials/py_feature2d/py_feature_homography/py_feature_homography.html#feature-matching-homography-to-find-objects)
+	-	build query image from all the images in the training set (combine_images.py) - almost done but not quite
+	-	guess_digit.py:
+		for each image in validation: 
+			run matcher against query image
+			locate object match
+			determine what the digit is based on the objects location in the query image
+			keep track of correct, incorrect and total
+
+Evaluation Metrics:
+	-	Accuracy = (True Positives + True Negatives)/all
+	-	Precision = True Positives/(True Positives + False Positives)
+	-	Recall = True Positives/(True Positives + False Negatives)
