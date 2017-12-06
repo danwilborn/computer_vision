@@ -7,7 +7,7 @@ import glob
 # get all the training images
 # store in img_dict where key is what digit it is and value is list of all the image files
 img_dict = dict()
-for subdir, dirs, files in os.walk('imgs\\training'):
+for subdir, dirs, files in os.walk('imgs/training'):
 	for i in range(10):
 		num_dir = os.path.join(subdir, str(i))
 		for sub, dir, imgs in os.walk(num_dir):
@@ -17,6 +17,7 @@ for subdir, dirs, files in os.walk('imgs\\training'):
 				file_path = os.path.join(num_dir, img)
 				#print(file_path)
 				img_dict[i].append(file_path)
+'''
 for num in img_dict:
 	print(num)
 	for i, img in enumerate(img_dict[num]):
@@ -24,6 +25,8 @@ for num in img_dict:
 			print(img)
 		else:
 			continue
+'''
+
 			
 # generate 50 row images with 100 images per row
 # each digit has 500 training images so there are 5 rows of 100 per digit, 50 total
@@ -42,7 +45,7 @@ for num in img_dict:
 			index = row_size * num_rows + img_count
 			img = img_dict[num][index]
 			im = cv2.imread(img)
-			im = cv2.resize(base, None, fx = 2, fy = 2, interpolation = cv2.INTER_CUBIC)
+			im = cv2.resize(im, None, fx = 2, fy = 2, interpolation = cv2.INTER_CUBIC)
 			himstack = np.hstack((himstack, im))
 			img_count += 1
 		num_rows += 1
@@ -56,11 +59,13 @@ row_imgs = [i for i in glob.glob('row*.png')]
 # base picture
 base = cv2.imread(row_imgs[0])
 imstack = base
+
 # find a way to sort file names
 for i,img in enumerate(row_imgs):
-	print(img)
+	#print(img)
 	if i == 0: continue
 	im = cv2.imread(img)
 	imstack = np.vstack((imstack, im))
 # write final query.png
 cv2.imwrite("query.png", imstack)
+
