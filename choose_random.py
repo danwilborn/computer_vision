@@ -5,7 +5,7 @@ from random import randint
 ### Script randomly selects an image from training data set and displays it ###
 # directory structure is ./imgs/trainging/{int}/****.png
 
-training_dir = './imgs/training'
+training_dir = os.path.join('imgs', 'training')
 
 # chose what digit to display
 num = randint(0, 9)

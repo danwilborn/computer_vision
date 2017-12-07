@@ -9,7 +9,7 @@ orb = cv2.ORB_create()
 brisk = cv2.BRISK_create()
 akaze = cv2.AKAZE_create()
 
-target_file = 'imgs/training/4/6.png'
+target_file = sys.argv[1]	#'imgs/training/4/6.png'
 query_file = 'query.png'
 		
 target_img = cv2.imread(target_file)
@@ -28,26 +28,26 @@ query_kp = fast_query.kp
 # fast1.show_result()
 # fast2.show_result()
 
-print('######### FAST ##########')
-print('----- Key Points -----')
-print(target_kp)
-print(query_kp)
-print(' ')
+# print('######### FAST ##########')
+# print('----- Key Points -----')
+# print(target_kp)
+# print(query_kp)
+# print(' ')
 
 # use BRISK with keypoints from FAST to generate descriptors
 target_brisk_kp, target_brisk_desc = brisk.compute(target_img, target_kp)
 query_brisk_kp, query_brisk_desc = brisk.compute(query_img, query_kp)
 
-print('######## BRISK #########')
-print('----- Key Points -----')
-print(target_brisk_kp)
-print(query_brisk_kp)
-print(' ')
+# print('######## BRISK #########')
+# print('----- Key Points -----')
+# print(target_brisk_kp)
+# print(query_brisk_kp)
+# print(' ')
 
-print('----- Descriptors -----')
-print(target_brisk_desc)
-print(query_brisk_desc)
-print(' ')
+# print('----- Descriptors -----')
+# print(target_brisk_desc)
+# print(query_brisk_desc)
+# print(' ')
 
 ############## Brute Force Matching ##############
 # create BFMatcher object
@@ -61,7 +61,7 @@ print(' ')
 # print(matches)
 
 # Draw first 3 matches
-# img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,matches[:3],None,flags=2)
+# img3 = cv2.drawMatchesKnn(target_img,kp1,query_img,kp2,matches[:3],None,flags=2)
 
 # plt.imshow(img3),plt.show()
 
@@ -82,7 +82,7 @@ print(' ')
 # print(good)
 
 # Draw matches
-# img3 = cv2.drawMatchesKnn(img1,kp1,img2,kp2,good,None,flags=2)
+# img3 = cv2.drawMatchesKnn(target_img,kp1,query_img,kp2,good,None,flags=2)
 
 # plt.imshow(img3),plt.show()
 
@@ -95,7 +95,8 @@ index_params = dict(algorithm = FLANN_INDEX_LSH,
 search_params = dict(checks=50)
 flann = cv2.FlannBasedMatcher(index_params, search_params)
 matches = flann.knnMatch(target_brisk_desc, query_brisk_desc, k=2)
-print(matches)
+# print("Matches:")
+# print(matches)
 
 good = []
 #print("finding good matches:")
@@ -113,34 +114,37 @@ for i,(m,n) in enumerate(good):
     if m.distance < 0.7*n.distance:
         matchesMask[i]=[1,0]
 
-'''
-if len(good) > MIN_MATCH_COUNT:
-	src_pts = np.float32([ kp1[m.queryIdx].pt for m in good ]).reshape(-1,1,2)
-	dst_pts = np.float32([ kp2[m.trainIdx].pt for m in good ]).reshape(-1,1,2)
 
-	M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
-	matchesMask = mask.ravel().tolist()
+#if len(good) > MIN_MATCH_COUNT:
+src_pts = np.float32([ target_brisk_kp[m.queryIdx].pt for m,n in good ]).reshape(-1,1,2)
+dst_pts = np.float32([ query_brisk_kp[m.trainIdx].pt for m,n in good ]).reshape(-1,1,2)
 
-	h, w = img1.shape
-	pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
-	dst = cv2.perspectiveTransform(pts,M)
+M, mask = cv2.findHomography(src_pts, dst_pts, cv2.RANSAC,5.0)
+matchesMask = mask.ravel().tolist()
 
-	img2 = cv2.polylines(img2,[np.int32(dst)],True,255,3,cv2.LINE_AA)
+#print(target_img.shape)
+h,w,blah = target_img.shape
+pts = np.float32([ [0,0],[0,h-1],[w-1,h-1],[w-1,0] ]).reshape(-1,1,2)
+dst = cv2.perspectiveTransform(pts,M)
 
-else:
-	print "Not enough matches are found - %d/%d % (len(good),MIN_MATCH_COUNT)
-	matchesMask = None
+query_img = cv2.polylines(query_img,[np.int32(dst)],True,255,3, cv2.LINE_AA)
 
-'''
+# print("Found Object:")
+# print(pts)
+# print(dst)
 
 draw_params = dict(matchColor = (0,255,0),
                    singlePointColor = (255,0,0),
                    matchesMask = matchesMask,
                    flags = 0)
 
-
-
+# based on object positon, determine what the digit is
+img_size = 56			# each number is 56x56 pixels
+block_size = 56 * 5		# 5 rows for each number
+x,y = dst[0][0]
+digit = int(int(y) / block_size)
+print(digit)
 
 #img3 = cv2.drawMatchesKnn(target_img,target_brisk_kp,query_img,query_brisk_kp,good,None,**draw_params)
 
-plt.imshow(img3),plt.show()
+#plt.imshow(img3),plt.show()

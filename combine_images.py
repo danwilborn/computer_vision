@@ -7,7 +7,8 @@ import glob
 # get all the training images
 # store in img_dict where key is what digit it is and value is list of all the image files
 img_dict = dict()
-for subdir, dirs, files in os.walk('imgs/training'):
+path = os.path.join('imgs', 'training')
+for subdir, dirs, files in os.walk(path):
 	for i in range(10):
 		num_dir = os.path.join(subdir, str(i))
 		for sub, dir, imgs in os.walk(num_dir):
