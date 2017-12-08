@@ -8,6 +8,10 @@ from corners import FAST
 orb = cv2.ORB_create()
 brisk = cv2.BRISK_create()
 akaze = cv2.AKAZE_create()
+# brief = cv2.xfeatures2d.BriefDescriptorExtractor_create()
+# star = cv2.FeatureDetector_create("STAR")
+
+
 
 target_file = sys.argv[1]	#'imgs/training/4/6.png'
 query_file = 'query.png'
@@ -22,6 +26,10 @@ target_img = cv2.resize(target_img, None, fx = 2, fy = 2, interpolation = cv2.IN
 fast_target = FAST(target_img)
 fast_query = FAST(query_img)
 
+# get keypoints using STAR detector
+# fast_target = star.detect(target_img, None)
+# fast_query = star.detect(query_img, None)
+
 target_kp = fast_target.kp
 query_kp = fast_query.kp
 
@@ -33,6 +41,9 @@ query_kp = fast_query.kp
 # print(target_kp)
 # print(query_kp)
 # print(' ')
+
+#
+
 
 # use BRISK with keypoints from FAST to generate descriptors
 target_brisk_kp, target_brisk_desc = brisk.compute(target_img, target_kp)
@@ -48,6 +59,13 @@ query_brisk_kp, query_brisk_desc = brisk.compute(query_img, query_kp)
 # print(target_brisk_desc)
 # print(query_brisk_desc)
 # print(' ')
+
+# use BRIEF with keypoints to generate descriptors
+# names as brisk because laziness
+# target_brisk_kp, target_brisk_desc = brief.compute(target_img, target_kp)
+# query_brisk_kp, query_brisk_desc = brief.compute(query_img, query_kp)
+
+
 
 ############## Brute Force Matching ##############
 # create BFMatcher object
